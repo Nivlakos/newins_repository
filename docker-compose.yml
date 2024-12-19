@@ -1,0 +1,25 @@
+version: '3.6'
+
+services:
+    db:
+      image: postgres
+      restart: always
+      environment:
+        POSTGRES_USER: ${POSTGRES_USER:-postgres}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-_StrongPass1}
+        POSTGRES_DB: tender_data
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+        - ./tender-db/dump-tender_data-202412110902.sql:/docker-entrypoint-initdb.d/init.sql
+      ports:
+        - "5431:5432"
+
+    new_tenders:
+      platform: linux/amd64
+      restart: always
+      build: new-tender-parse
+      depends_on:
+        - db
+    
+volumes: 
+  pgdata:
